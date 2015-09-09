@@ -1,0 +1,71 @@
+DNS Server
+==========
+
+options {
+        listen-on port 53 { 192.168.1.250; };
+        directory       "/var/named";
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        allow-query     { any; };
+        allow-transfer { 192.168.1.24;};
+//      recursion no;
+        forwarders { 192.168.1.1; };
+
+        /* Path to ISC DLV key */
+        bindkeys-file "/etc/named.iscdlv.key";
+
+};
+
+logging {
+        channel default_debug {
+                file "data/named.log";
+                severity dynamic;
+        };
+};
+
+zone "dilithium.com" IN {
+        type master;
+        file "/var/named/named.hadoop.forw";
+};
+
+zone "nginxsite.com" IN {
+        type master;
+        file "/var/named/nginxsite.com";
+};
+
+zone "1.168.192.in-addr.arpa" IN {
+        type master;
+        file "/var/named/named.hadoop.rev";
+};
+
+=========================
+Slave
+
+options {
+        listen-on port 53 { 192.168.1.24; };
+        directory       "/var/named";
+        allow-query     { any; };
+        recursion yes;
+
+};
+
+zone "dilithium.com" IN {
+        type slave;
+        masters {192.168.1.250;};
+        file "slaves/named.hadoop.forw";
+};
+
+zone "1.168.192.in-addr.arpa" IN {
+        type slave;
+        masters {192.168.1.250;}
+        file "slaves/named.hadoop.rev";
+};
+
+===============
+notify yes;
+	also-notify { 15.255.152.4; }; 
+	
+	options {
+		allow-notify { 192.249.249.17; }; // let 192.249.249.17 send NOTIFY msgs
+	};
