@@ -1,0 +1,11 @@
+yum -y install yum-cron
+yum update
+chkconfig yum-cron on
+
+vi /etc/cron.daily/yum.cron
+
+MAILTO=yourUSERkey+devicename+p1@api.pushover.net
+
+/etc/sysconfig/yum-cron
+
+YUM_PARAMETER="-x kernel* -x php*"

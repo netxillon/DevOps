@@ -1,0 +1,113 @@
+1. Install
+
+yum install httpd xinetd syslinux tftp tftp-server -y
+
+2. Configure PXE Server
+
+Copy the following TFTP configuration files to the /var/lib/tftpboot/ directory.
+
+cd /usr/share/syslinux/
+cp pxelinux.0 menu.c32 memdisk mboot.c32 chain.c32 /var/lib/tftpboot/
+
+
+3. Edit file /etc/xinetd.d/tftp
+
+vi /etc/xinetd.d/tftp
+
+Enable TFTP server. To d this, change “disable=yes” to “no”.
+
+4. Next, create a directory to store CentOS installation ISO image. and mount the image to that directory as shown below. I have CentOS 6.5 32bit ISO image on my /root directory.
+
+mkdir /var/lib/tftpboot/centos6_x86
+mount -o loop /root/CentOS-6.5-i386-bin-DVD1.iso /var/lib/tftpboot/centos6_x86
+
+or a DVD
+
+5. Setup HTTPD
+
+vi /etc/httpd/conf.d/pxeboot.conf
+
+Alias /centos6_x86 /var/lib/tftpboot/centos6_x86
+
+<Directory /var/lib/tftpboot/centos6_x86>
+Options Indexes FollowSymLinks
+Order Deny,Allow
+Deny from all
+Allow from 127.0.0.1 192.168.1.0/24
+</Directory>
+
+6. Then, create a configuration directory for PXE server:
+
+mkdir /var/lib/tftpboot/pxelinux.cfg
+
+7. Now, create PXE server configuration file under the pxelinux.cfg:
+
+vi /var/lib/tftpboot/pxelinux.cfg/default
+
+default menu.c32
+prompt 0
+timeout 300
+ONTIMEOUT local
+
+menu title ########## PXE Boot Menu ##########
+
+label 1
+menu label ^1) Install CentOS 6 i386 Edition
+kernel centos6_x86/images/pxeboot/vmlinuz
+append initrd=centos6_x86/images/pxeboot/initrd.img method=ftp://192.168.1.52/pub/centos6_x86 devfs=nomount ks=ftp://192.168.1.250/pub/ks.cfg ksdevice=eth0
+
+label 2
+menu label ^2) Boot from local drive localboot
+
+======================
+
+8. Configure DHCP Server
+
+Now, we have to configure the DHCP server to work with PXE server.
+
+Edit file /etc/dhcp/dhcpd.conf,
+
+vi /etc/dhcp/dhcpd.conf
+
+Add the following lines at the end:
+
+allow booting;
+allow bootp;
+option option-128 code 128 = string;
+option option-129 code 129 = text;
+next-server 192.168.1.150;
+filename "pxelinux.0";
+
+Save and close the file.
+
+Now, We have come to the end of PXE server configuration. Restart all the services to complete the configuration.
+
+service xinetd restart
+service httpd restart
+service dhcpd restart
+
+
+
+
+
+
+
+
+
+Tips:
+
+host test64 {
+			hardware ethernet 00:0c:29:b3:81:99;
+			fixed-address 10.25.42.139;
+			next-server 10.25.0.5;
+			filename "pxelinux.0";
+		}
+		
+		
+
+/tftpboot/pxelinux.cfg>  cat 01-00-24-4f-ab-1e-84
+
+default linux
+label linux
+  kernel vmlinuz-rhel-6.4-x86_64
+  append load_ramdisk=1 initrd=initrd.img-rhel-6.4-x86_64 network selinux=0 ksdevice=eth0 ks=nfs:nolock,rsize=1480,wsize=1480:buildserver:/kickstart/host-configs/myserver-ks.cfg

@@ -1,0 +1,25 @@
+# cp anaconda-ks.cfg  /var/ftp/pub/
+# chmod 755 /var/ftp/pub/anaconda-ks.cfg
+
+Configure FTP Server and Verify in firefox  or commandline ftp://192.168.1.250/pub/
+
+
+Kickstart Validator
+
+# yum install pykickstart
+# ksvalidator /var/ftp/pub/anaconda-ks.cfg
+
+ksdevice=eth0 ip=192.168.1.62 netmask=255.255.255.0 gateway=192.168.1.1
+
+You can also
+
+firewall --disabled
+selinux  --disabled
+
+
+%post --log /root/ks-post.log
+#sed -i -e 's/\(^SELINUX=\).*$/\1disabled/' /etc/selinux/config
+#find / -exec setfattr -x security.selinux {} \;
+wget -O- http://10.7.0.50/kickstart/generic-configs/get_files.sh | /bin/bash
+cp /tmp/nic-include /root/
+

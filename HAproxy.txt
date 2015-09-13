@@ -1,0 +1,48 @@
+HAProxy
+=======
+
+wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
+1. yum install haproxy
+
+2. vi /etc/haproxy/haproxy.cfg
+
+Layer 4
+=======
+
+frontend webapp1
+         bind 192.168.1.250:80
+         default_backend webapp1-servers
+		
+backend webapp1-servers
+        balance roundrobin leastconn source uri
+        mode tcp
+        server webserver1 192.168.1.21:80
+        server webserver2 192.168.1.22:80
+		
+		server webserver2 192.168.1.22:80 check
+		server webserver2 192.168.1.22:80 disabled
+		
+Layer 7
+=======
+
+frontend webapp1
+         bind 192.168.1.250:80
+         mode http
+         acl url_forum      path_beg     /forum
+         use_backend webapp1_forum if url_forum
+         default_backend webapp1_main
+		 
+backend webapp1_main
+         mode http
+         balance roundrobin
+         server webserver1 192.168.1.21:80
+		 server webserver1 192.168.1.22:8080
+		 
+backend webapp1_forum
+         mode http
+         balance roundrobin
+         server webserver3 192.168.1.23:80
+         server webserver4 192.168.1.24:80
+		 
+		 

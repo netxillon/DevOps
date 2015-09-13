@@ -1,0 +1,7 @@
+cat /sys/block/sda/queue/scheduler 
+
+/usr/src/linux/Documentation/block/switching-sched.txt
+
+echo 'deadline' > /sys/block/sda/queue/scheduler
+
+kernel /vmlinuz-2.6.9-67.EL ro root=/dev/vg0/lv0 elevator=deadline

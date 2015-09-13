@@ -1,0 +1,16 @@
+Download
+
+wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
+rpm --import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
+
+Installation
+
+# yum install jenkins
+
+chkconfig jenkins on
+
+service jenkins start
+
+netstat -tnlp | grep 8080
+
+java -jar jenkins-cli.jar -s http://192.168.1.22:8080/ help

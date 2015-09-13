@@ -1,0 +1,56 @@
+Nginx Configuration
+===================
+
+1)
+useradd nginxsite
+passwd nginxsite
+
+2) mkdir -p /var/www/nginxsite.com/public_html
+
+3) vim /var/www/nginxsite.com/public_html/index.html
+
+<html>
+<head>
+<title>www.nginxsite.com</title>
+</head>
+<body>
+<h1>Success! Nginx is properly serving on this domain!</h1>
+</body>
+</html>
+
+4)
+chown -R nginxsite:nginxsite /var/www/nginxsite.com/public_html
+chmod 755 /var/www/nginxsite.com/public_html
+
+5) Setup directories
+
+mkdir /etc/nginx/sites-available
+mkdir /etc/nginx/sites-enabled
+
+6)
+
+vim /etc/nginx/nginx.conf
+
+include /etc/nginx/sites-enabled/*.conf;
+server_names_hash_bucket_size 64;
+
+7) Create a server block
+
+vim /etc/nginx/sites-available/nginxsite.com.conf
+
+server {
+  listen       80;
+  server_name  nginxsite.com www.nginxsite.com;
+  location / {
+    root   /var/www/nginxsite.com/public_html;
+    index  index.html index.htm;
+    try_files $uri $uri/ =404;
+    }    error_page   500 502 503 504  /50x.html;
+  location = /50x.html {
+    root   html;
+  }
+}
+
+8) ln -s /etc/nginx/sites-available/nginxsite.com.conf /etc/nginx/sites-enabled/nginxsite.com.conf
+
+9) restart the nginx server

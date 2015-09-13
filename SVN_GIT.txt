@@ -1,0 +1,81 @@
+Install and configure svn server
+
+Step 1 » Now start installing svn packages, Just type the below command .
+
+# yum install subversion mod_dav_svn
+
+Step 2 » Now create new directory for svn repository.
+
+# mkdir /svn
+
+Step 3 » Create a new repository in the svn by issuing the below command
+
+# svnadmin create /svn/newrep
+
+Step 4 » Now issue the below commands one by one for necessary permissions.
+
+# chown -R apache.apache /svn/newrep/
+
+Step 5 » Now create a password file “newrep.users” with username “dep” by typing below command
+# htpasswd -cm /svn/newrep.users dep
+
+Step 6 » Now open the SVN apache config file ( /etc/httpd/conf.d/subversion.conf ) and add the below lines at the end of the file .
+<location /repos>
+DAV svn
+# SVN path
+SVNParentPath /svn
+AuthType Basic
+AuthName "Authorization Realm"
+#password file path
+AuthUserFile /svn/newrep.users
+Require valid-user
+</location>
+
+Step 12 » Create basic repository structure with the below commands
+# mkdir -p /tmp/svn/{trunk,branches,tags}
+# svn import -m 'Initializing basic repository structure' /tmp/svn/ http://localhost/repos/newrep/
+
+==============
+
+SVN Commands
+
+
+export EDITOR=/usr/bin/vim
+
+
+svn co https://svn.apache.org/repos/asf/openoffice/trunk aoo-trunk
+svn status
+svn add
+svn diff
+svn update
+
+svn commit test-file.c --username your-name --password your-password \
+  -m "added new C file"
+  
+  
+==========================GIT=======================
+
+# yum install git
+
+# git --version
+
+git config --global user.name "testuser"
+git config --global user.email "testuser@example.com"
+
+git config --list
+
+git init
+
+vi README.md
+
+git add README.md
+
+git add .
+
+git commit -m "test"
+
+git remote add test git@github.com:netxillon/test.git
+
+git remote set-url --add test git@github.com:netxillon/test.git
+
+git push test master
