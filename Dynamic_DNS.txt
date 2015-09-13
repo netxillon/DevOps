@@ -1,0 +1,64 @@
+# vi /etc/named.conf
+
+controls {
+inet 127.0.0.1 port 953
+allow {127.0.0.1;} keys {"rndckey";};
+};
+zone "example.com" IN {
+type master;
+file “example.for";
+allow-update { key rndckey; } ;
+};
+zone "0.168.192.in?addr.arpa" IN {
+type master;
+file “example.rev";
+allow-update { key rndckey; } ;
+};
+
+================
+
+DHCP
+
+--------
+
+[root@dns ~]# vi /etc/dhcpd.conf
+
+To add the options
+
+include "/etc/rndc.key";
+
+ddns-domain “example.com";
+
+ddns-update-style interim;
+
+ddns-rev-domain "0.168.192.in-addr.arpa";
+
+ddns-updates on; allow Dynamic DNS
+
+authoritative;
+
+#master server for this domain
+
+# Allow only the DHCP server to update DNS
+
+ignore client-updates;
+
+allow unknown-clients;zone 0.168.192.in-addr.arpa.
+
+{
+
+primary 192.168.0.252;
+
+key "rndckey";
+
+}
+
+zone techbrown.com. {
+
+primary 192.168.0.252;
+
+key "rndckey";
+
+}
+
+range 192.168.0.20 192.168.0.59;
