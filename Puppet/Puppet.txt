@@ -1,0 +1,142 @@
+Setting up Repository
+=====================
+
+To enable the repository, run the command below that corresponds to your OS version:
+
+Enterprise Linux 7
+
+$ sudo rpm -ivh https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+
+Enterprise Linux 6
+
+$ sudo rpm -ivh https://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
+
+Enterprise Linux 5
+
+$ sudo rpm -ivh https://yum.puppetlabs.com/puppetlabs-release-el-5.noarch.rpm
+
+
+Installations
+=============
+
+1. Install Puppet on the Puppet Master Server
+
+# yum install puppet-server
+
+2. Upgrading to the latest version
+
+# puppet resource package puppet-server ensure=latest
+
+3. Setup certificate
+
+dns_alt_names = puppet,puppet.example.com
+
+# puppet master --verbose --no-daemonize
+
+puppet master --compile reposrv.dilithium.com
+puppet master --configprint preferred_serialization_format
+
+4. Setup Web Server
+
+yum install httpd httpd-devel mod_ssl ruby-devel rubygems gcc
+yum install gcc-c++ openssl-devel zlib-devel
+gem install rack passenger
+passenger-install-apache2-module
+
+Create web Passenger directories
+--------------------------------
+# mkdir -p /usr/share/puppet/rack/puppetmasterd
+# mkdir /usr/share/puppet/rack/puppetmasterd/public
+# mkdir /usr/share/puppet/rack/puppetmasterd/tmp
+# cp /usr/share/puppet/ext/rack/config.ru /usr/share/puppet/rack/puppetmasterd/
+# chown puppet:puppet /usr/share/puppet/rack/puppetmasterd/config.ru
+
++++++++++++httpd.conf++++++++++++++++++
+LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-5.0.18/buildout/apache2/mod_passenger.so
+   <IfModule mod_passenger.c>
+     PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-5.0.18
+     PassengerDefaultRuby /usr/bin/ruby
+   </IfModule>
+   ++++++++++++++++++
+   
++++++++++++++++++++++++++puppetmaster.conf++++++++++++++++++++
+
+# RHEL/CentOS:
+#LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-4.0.x/ext/apache2/mod_passenger.so
+#PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-4.0.x
+#PassengerRuby /usr/bin/ruby
+
+# And the passenger performance tuning settings:
+# Set this to about 1.5 times the number of CPU cores in your master:
+PassengerMaxPoolSize 12
+# Recycle master processes after they service 1000 requests
+PassengerMaxRequests 1000
+# Stop processes if they sit idle for 10 minutes
+PassengerPoolIdleTime 600
+
+Listen 8140
+<VirtualHost *:8140>
+    # Make Apache hand off HTTP requests to Puppet earlier, at the cost of
+    # interfering with mod_proxy, mod_rewrite, etc. See note below.
+    PassengerHighPerformance On
+
+    SSLEngine On
+
+    # Only allow high security cryptography. Alter if needed for compatibility.
+    SSLProtocol ALL -SSLv2 -SSLv3
+    SSLCipherSuite EDH+CAMELLIA:EDH+aRSA:EECDH+aRSA+AESGCM:EECDH+aRSA+SHA384:EECDH+aRSA+SHA256:EECDH:+CAMELLIA256:+AES256:+CAMELLIA128:+AES128:+SSLv3:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!DSS:!RC4:!SEED:!IDEA:!ECDSA:kEDH:CAMELLIA256-SHA:AES256-SHA:CAMELLIA128-SHA:AES128-SHA
+    SSLHonorCipherOrder     on
+
+    SSLCertificateFile      /var/lib/puppet/ssl/certs/dn2.dilithium.com.pem
+    SSLCertificateKeyFile   /var/lib/puppet/ssl/private_keys/dn2.dilithium.com.pem
+    SSLCertificateChainFile /var/lib/puppet/ssl/ca/ca_crt.pem
+    SSLCACertificateFile    /var/lib/puppet/ssl/ca/ca_crt.pem
+    SSLCARevocationFile     /var/lib/puppet/ssl/ca/ca_crl.pem
+    SSLCARevocationCheck 	chain
+    SSLVerifyClient         optional
+    SSLVerifyDepth          1
+    SSLOptions              +StdEnvVars +ExportCertData
+
+    # Apache 2.4 introduces the SSLCARevocationCheck directive and sets it to none
+	# which effectively disables CRL checking. If you are using Apache 2.4+ you must
+    # specify 'SSLCARevocationCheck chain' to actually use the CRL.
+
+    # These request headers are used to pass the client certificate
+    # authentication information on to the Puppet master process
+    RequestHeader set X-SSL-Subject %{SSL_CLIENT_S_DN}e
+    RequestHeader set X-Client-DN %{SSL_CLIENT_S_DN}e
+    RequestHeader set X-Client-Verify %{SSL_CLIENT_VERIFY}e
+
+    DocumentRoot /usr/share/puppet/rack/puppetmasterd/public
+
+    <Directory /usr/share/puppet/rack/puppetmasterd/>
+      Options None
+      AllowOverride None
+      # Apply the right behavior depending on Apache version.
+      <IfVersion < 2.4>
+        Order allow,deny
+        Allow from all
+      </IfVersion>
+      <IfVersion >= 2.4>
+        Require all granted
+      </IfVersion>
+    </Directory>
+
+    ErrorLog /var/log/httpd/puppet-server.example.com_ssl_error.log
+    CustomLog /var/log/httpd/puppet-server.example.com_ssl_access.log combined
+</VirtualHost>
+
+++++++++++++++++++++++
+
+3. Puppet on Agent nodes
+
+# yum install puppet
+# gem install msgpack
+puppet resource --types
+puppet parser validate
+
+/etc/puppet/autosign.conf
+
+*.example.com
+
+

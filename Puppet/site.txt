@@ -1,0 +1,59 @@
+node 'dn2.dilithium.com' {
+  include accounts
+  include motd
+}
+
+node 'dn3.dilithium.com' {
+  include motd
+  include accounts
+  include apache
+
+  class { 'mysql::server':
+       root_password   => 'test',
+       override_options => { 'mysqld' => { 'max_connections' => '1024','key_buffer_size' => '10M','max_binlog_size' => '40M','query_cache_size' => '10M' } }
+
+}
+
+mysql_user { 'bob@localhost':
+  ensure                   => 'present',
+  max_connections_per_hour => '60',
+  max_queries_per_hour     => '120',
+  max_updates_per_hour     => '120',
+  max_user_connections     => '10',
+}
+
+mysql_grant { 'bob@localhost/statedb.states':
+  ensure     => 'present',
+  options    => ['GRANT'],
+  privileges => ['ALL'],
+  table      => 'statedb.states',
+  user       => 'bob@localhost',
+}
+
+group { 'hat':
+    ensure  => present,
+    gid => '1000',
+  }
+
+user { 'hat':
+ensure     => present,
+  uid        => '1000',
+  gid        => '1000',
+  shell      => '/bin/bash',
+  home       => '/home/hat',
+}
+
+file {'/tmp/dns':    # resource type file and filename
+    ensure => present, # make sure it exists
+    mode => 0644,
+    content => "Only DNS servers get this file.\n",
+  }
+}
+
+class motd {
+ file { "/etc/motd":
+ owner => root,
+ group => root,
+ source => "puppet:///extra_files/motd"
+ }
+}

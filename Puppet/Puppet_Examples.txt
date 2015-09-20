@@ -1,0 +1,36 @@
+Puppet Examples:
+===============
+
+user { 'mitchell':
+  ensure     => present,
+  uid        => '1000',
+  gid        => '1000',
+  shell      => '/bin/bash',
+  home       => '/home/mitchell'
+}
+
+node 'dn2.dilithium.com' {
+  include accounts
+  include motd
+}
+
+node 'dn3.dilithium.com' {
+  include accounts
+  include motd
+}
+
+class motd {
+ file { "/etc/motd":
+ owner => root,
+ group => root,
+ source => "puppet:///modules/accounts/files/motd"
+ }
+}
+
+node 'ns1', 'ns2' {    # applies to ns1 and ns2 nodes
+  file {'/tmp/dns':    # resource type file and filename
+    ensure => present, # make sure it exists
+    mode => 0644,
+    content => "Only DNS servers get this file.\n",
+  }
+}

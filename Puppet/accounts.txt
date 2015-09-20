@@ -1,0 +1,28 @@
+class accounts {
+
+$rootgroup = $osfamily ? {
+    'Debian'  => 'sudo',
+    'RedHat'  => 'wheel',
+    default   => warning('This distribution is not supported by the Accounts module'),
+  }
+
+include groups
+  user { 'new':
+    ensure      => present,
+    home        => '/home/new',
+    shell       => '/bin/bash',
+    managehome  => true,
+    gid         => 'new',
+    groups      => "$rootgroup",
+    password    => '$1$SBgOO61T$QZjuUd9Q0swmvRUtybcjk0',
+    }
+
+user { 'hive':
+    ensure      => present,
+    home        => '/home/new',
+    shell       => '/bin/bash',
+    managehome  => true,
+    gid         => 'hive',
+    password    => '$1$SBgOO61T$QZjuUd9Q0swmvRUtybcjk0',
+    }
+}
