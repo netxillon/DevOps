@@ -1,0 +1,15 @@
+VirtualBox
+===========
+
+
+VBoxManage snapshot $VM take <name of snapshot>
+
+
+VBoxManage createvm --name "io" --register
+VBoxManage modifyvm "io" --memory 512 --acpi on --boot1 dvd
+VBoxManage modifyvm "io" --nic1 bridged --bridgeadapter1 eth0
+VBoxManage modifyvm "io" --macaddress1 XXXXXXXXXXXX
+VBoxManage modifyvm "io" --ostype Debian
+
+
+VBoxManage modifyhd <absolute path to file> --resize <size in MB>

@@ -1,0 +1,37 @@
+yum install rsyslog
+
+
+logger -p daemon.warn "This is only a test."
+
+
+
+First load the imfile module. This must be done just once.
+
+module(load="imfile" PollingInterval="5") 
+
+Then specify the path to the log file that the imfile module should monitor:
+
+input(type="imfile"
+      File="/var/log/foobar.log"
+      Tag="foobar"
+      Severity="error"
+      Facility="local7")
+
+
+for i in {auth,auth-priv,cron,daemon,kern,lpr,mail,mark,news,syslog,user,uucp,local0, 
+
+local1,local2,local3,local4,local5,local6,local7}        # (this is all one line!)
+
+   
+
+do
+
+for k in {debug,info,notice,warning,err,crit,alert,emerg}
+
+do
+
+logger -p $i.$k "Test daemon message, facility $i priority $k"
+
+done
+
+done

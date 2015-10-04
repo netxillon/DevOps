@@ -1,0 +1,48 @@
+Nagios Installation
+
+$ yum install -y wget httpd php gcc glibc glibc-common gd gd-devel make net-snmp
+
+# useradd nagios
+# groupadd nagcmd
+# usermod -a -G nagcmd nagios
+# tar -xzvf /var/ftp/pub/ganglia_nagios/nagios-4.0.8.tar.gz -C /usr/local/
+# cd /usr/local/nagios-4.0.8/
+# ./configure --with-command-group=nagcmd
+# make all
+# make install
+# make install-init
+# make install-config
+# make install-commandmode
+# make install-webconf
+# cp -R contrib/eventhandlers/ /usr/local/nagios/libexec/
+# chown -R nagios:nagios /usr/local/nagios/libexec/eventhandlers
+# /usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+# /etc/init.d/httpd start
+
+#service httpd start
+# htpasswd –c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+
+Nagios Plugin Installation
+
+# tar -xzvf /var/ftp/pub/ganglia_nagios/nagios-plugins-2.0.3.tar.gz -C /usr/local/
+# cd /usr/local/nagios-plugins-2.0.3/
+# ./configure --with-nagios-user=nagios --with-nagios-group=nagios
+# make
+# make install
+
+Nagios NRPE Installation
+
+# tar -xzvf nrpe-2.15.tar.gz -C /usr/local/
+# cd /usr/local/nrpe-2.15/
+# make
+# make all
+# ./configure
+# yum install openssl
+# yum install openssl-devel
+# ./configure
+# make all
+# make install
+# make install-plugin
+# make install-daemon
+# make install-daemon-config
+# make install-xinetd
