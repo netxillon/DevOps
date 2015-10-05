@@ -1,0 +1,22 @@
+KVM
+===
+
+yum install kvm qemu-kvm python-virtinst libvirt libvirt-python virt-manager libguestfs-tools
+yum install virt-manager libvirt qemu-system-x86 openssh-askpass
+
+service libvirtd start
+ls -l /var/lib/libvirt/boot/
+virsh --connect qemu:///system
+
+
+virt-install \
+--name RHEL-vm1 \
+--description "RHEL 6.7 64 bit VM1" \
+--ram=512 \
+--vcpus=1 \
+--disk path=/var/lib/libvirt/images/rhel-vm1-node1.img,size=4 \
+--cdrom /var/ftp/pub/Centos67/CentOS-6.7.iso \
+--network bridge:br0 --graphics vnc
+
+
+virt-install --connect qemu:///system -n vm10 -r 512 --vcpus=2 --disk path=/var/lib/libvirt/images/vm10.img,size=4 -c /var/ftp/pub/Centos67/CentOS-6.7.iso --noautoconsole --os-type linux --os-variant debiansqueeze --accelerate --network=bridge:br0 --hvm

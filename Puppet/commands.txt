@@ -1,0 +1,110 @@
+968   vi apache/examples/init.pp
+  969  cat accounts/examples/init.pp
+  970  puppet apply --noop apache/examples/init.pp
+  971  history | grep puppet
+  972  puppet apply --noop apache/examples/init.pp
+  973  yum remove httpd
+  974  puppet apply apache/examples/init.pp
+  975  /etc/init.d/httpd start
+  976  vi /etc/httpd/conf/httpd.conf
+  977  cd /etc/httpd/conf.d/
+  978  mv puppetmaster.conf puppetmaster.conf.old
+  979  yum remove httpd -y
+  980  puppet apply apache/examples/init.pp
+  981  cd -
+  982  puppet apply apache/examples/init.pp
+  983  /sbin/service httpd start
+  984  /sbin/service httpd status
+  985  vi apache/examples/init.pp
+  986  vi apache/manifests/init.pp
+  987  cat /var/www/html/index.html
+  988  pwd
+  989  vi ../manifests/site.pp
+  990  puppet apply ../manifests/site.pp
+  991  pwd
+  992  ls -l
+  993  mkdir -p mysql{examples,files,templates,manifests}
+  994  cd mysql
+  995  ls -l
+  996  rm -rf mysql*
+  997  mkdir -p mysql/{examples,files,templates,manifests}
+  998  cd mysql/
+  999  ls -l
+ 1000  vi manifests/init.pp
+ 1001  cat ../apache/manifests/init.pp
+ 1002  vi manifests/init.pp
+ 1003  vi examples/init.pp
+ 1004  puppet parser validate examples/init.pp
+ 1005  puppet apply examples/init.pp
+ 1006  vi manifests/init.pp
+ 1007  puppet apply examples/init.pp
+ 1008  vi manifests/init.pp
+ 1009  puppet apply examples/init.pp
+ 1010  /etc/init.d/mysqld status
+ 1011  puppet module install puppetlabs-mysql
+ 1012  cd ..
+ 1013  ls -l
+ 1014  mv mysql mysql_custom
+ 1015  puppet module install puppetlabs-mysql
+ 1016  puppet resource --types
+ 1017  ls -l
+ 1018  cd mysql_custom/
+ 1019  vi manifests/init.pp
+ 1020  yum remove mysql-server -y
+ 1021  puppet apply --noop manifests/init.pp
+ 1022  cd ..
+ 1023  vi manifests/site.pp
+ 1024  puppet apply manifests/site.pp
+ 1025  vi manifests/site.pp
+ 1026  cat modules/mysql_custom/examples/init.pp
+ 1027  ls -l
+ 1028  cd modules/
+ 1029  ls -l
+ 1030  mv mysql_custom mysqln
+ 1031  vi mysqln/manifests/init.pp
+ 1032  vi mysqln/examples/init.pp
+ 1033  puppet apply manifests/site.pp
+ 1034  cd ..
+ 1035  vi manifests/site.pp
+ 1036  puppet apply manifests/site.pp
+ 1037  puppet apply modules/mysqln/examples/init.pp --noop
+ 1038  vi modules/mysqln/manifests/init.pp
+ 1039  puppet apply modules/mysqln/examples/init.pp
+ 1040  vi modules/mysqln/manifests/init.pp
+ 1041  puppet apply modules/mysqln/examples/init.pp
+ 1042  vi modules/mysqln/manifests/init.pp
+ 1043  puppet apply modules/mysqln/examples/init.pp
+ 1044  vi modules/mysqln/manifests/init.pp
+ 1045  puppet apply modules/mysqln/examples/init.pp
+ 1046  vi modules/mysqln/manifests/init.pp
+ 1047  puppet apply modules/mysqln/examples/init.pp
+ 1048  vi modules/mysqln/manifests/init.pp
+ 1049  puppet apply modules/mysqln/examples/init.pp
+ 1050  vi modules/mysqln/manifests/init.pp
+ 1051  puppet apply modules/mysqln/examples/init.pp
+ 1052  vi modules/mysqln/manifests/init.pp
+ 1053  puppet apply modules/mysqln/examples/init.pp
+ 1054  vi modules/mysqln/manifests/init.pp
+ 1055  puppet apply modules/mysqln/examples/init.pp
+ 1056  vi modules/mysqln/manifests/init.pp
+ 1057  puppet apply modules/mysqln/examples/init.pp
+ 1058  vi modules/mysqln/manifests/init.pp
+ 1059  vi manifests/site.pp
+ 1060  puppet apply manifests/site.pp
+ 1061  vi manifests/site.pp
+ 1062  puppet apply manifests/site.pp
+ 1063  vi manifests/site.pp
+ 1064  puppet apply manifests/site.pp
+ 1065  vi manifests/site.pp
+ 1066  puppet apply manifests/site.pp
+ 1067  vi manifests/site.pp
+ 1068  puppet apply manifests/site.pp
+ 1069  vi manifests/site.pp
+ 1070  puppet apply manifests/site.pp
+ 1071  vi manifests/site.pp
+ 1072  puppet apply manifests/site.pp
+ 1073  vi manifests/site.pp
+ 1074  puppet apply manifests/site.pp
+ 1075  vi manifests/site.pp
+ 1076  puppet apply manifests/site.pp
+ 1077  cat manifests/site.pp

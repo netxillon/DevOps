@@ -1,0 +1,69 @@
+Installing Hiera
+================
+
+https://docs.puppetlabs.com/hiera/1/installing.html
+
+https://puppetlabs.com/blog/first-look-installing-and-using-hiera
+
+http://www.slashroot.in/puppet-hiera-tutorial-example-configuration
+http://garylarizza.com/blog/2013/12/08/when-to-hiera/
+
+Examples:
+
+/etc/puppet/manifests/sites.pp, here’s how our site manifest might have looked:
+
+	node "kermit.example.com" {
+	  class { "ntp":
+		servers    => [ '0.us.pool.ntp.org iburst','1.us.pool.ntp.org iburst','2.us.pool.ntp.org iburst','3.us.pool.ntp.org iburst'],
+		autoupdate => false,
+		restrict   => [],
+		enable     => true,
+	  }
+	}
+
+	node "grover.example.com" {
+	  class { "ntp":
+		servers    => [ 'kermit.example.com','0.us.pool.ntp.org iburst','1.us.pool.ntp.org iburst','2.us.pool.ntp.org iburst'],
+		autoupdate => true,
+		restrict   => [],
+		enable     => true,
+	  }
+	}
+
+	node "snuffie.example.com", "bigbird.example.com", "hooper.example.com" {
+	  class { "ntp":
+		servers    => [ 'grover.example.com', 'kermit.example.com'],
+		autoupdate => true,
+		enable     => true,
+	  }
+	}
+
+==============================Hiera=================================================
+hiera.yaml
+
+---
+:backends:
+  - yaml
+:yaml:
+  :datadir: /etc/puppet/hieradata
+:hierarchy:
+  - "node/%{::fqdn}"
+  - common
+  
+  
+kermit.example.com.yaml
+
+---
+ntp::restrict:
+  -
+ntp::autoupdate: false
+ntp::enable: true
+ntp::servers:
+  - 0.us.pool.ntp.org iburst
+  - 1.us.pool.ntp.org iburst
+  - 2.us.pool.ntp.org iburst
+  - 3.us.pool.ntp.org iburst
+  
+$ hiera ntp::servers ::fqdn=kermit.example.com
+
+==================================
